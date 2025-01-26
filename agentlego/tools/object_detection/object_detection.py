@@ -47,13 +47,5 @@ class ObjectDetection(BaseTool):
         )
         data_sample = results['predictions'][0]
         preds: DetDataSample = data_sample.pred_instances
-        preds = preds[preds.scores > 0.5]
-        pred_descs = []
-        pred_tmpl = '{} ({:.0f}, {:.0f}, {:.0f}, {:.0f}), score {:.0f}'
-        for label, bbox, score in zip(preds.labels, preds.bboxes, preds.scores):
-            label = self.classes[label]
-            pred_descs.append(pred_tmpl.format(label, *bbox, score * 100))
-        if len(pred_descs) == 0:
-            return 'No object found.'
-        else:
-            return '\n'.join(pred_descs)
+        
+        return preds

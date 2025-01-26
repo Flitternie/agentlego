@@ -37,9 +37,6 @@ class TextToBbox(BaseTool):
         self,
         image: ImageIO,
         text: Annotated[str, Info('The object description in English.')],
-        top1: Annotated[bool,
-                        Info('If true, return the object with highest score. '
-                             'If false, return all detected objects.')] = True,
     ) -> Annotated[str,
                    Info('Detected objects, include bbox in '
                         '(x1, y1, x2, y2) format, and detection score.')]:
@@ -53,17 +50,5 @@ class TextToBbox(BaseTool):
         data_sample = results['predictions'][0]
         preds: DetDataSample = data_sample.pred_instances
 
-        if len(preds) == 0:
-            return 'No object found.'
+        return preds
 
-        pred_tmpl = '({:.0f}, {:.0f}, {:.0f}, {:.0f}), score {:.0f}'
-        if top1:
-            preds = preds[preds.scores.topk(1).indices]
-        else:
-            preds = preds[preds.scores > 0.5]
-        pred_descs = []
-        for bbox, score in zip(preds.bboxes, preds.scores):
-            pred_descs.append(pred_tmpl.format(*bbox, score * 100))
-        pred_str = '\n'.join(pred_descs)
-
-        return pred_str
